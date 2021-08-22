@@ -7,8 +7,8 @@ export const Comment = list({
     access:{
         create: args => rules.canCreate(args) ,
         read: args => rules.canViewAll(args),
-        update: args => rules.canDeleteAndUpdateComment(args),
-        delete: args => rules.canDeleteAndUpdateComment(args)
+        update: args => rules.canUpdateComment(args),
+        delete: args => rules.canDeleteComment(args)
     },
     hooks: {
         resolveInput:({resolvedData, context, operation}) => {
@@ -21,14 +21,15 @@ export const Comment = list({
             if (!resolvedData.posts){
                 addValidationError("Comments must belong to a post")
             }
-        }
+        },
+
        },
       fields: {
         posts: relationship({
             ref: 'Post.comments',
             
         }),
-        body: text({isRequired:true, isUnique:true}),
+        body: text({isRequired:true}),
         owner: relationship({
           ref: 'User.comments'
         }),

@@ -1,5 +1,4 @@
-import {permissionsList} from './permissionTypes'
-import {ListAccessArgs, ContextAPI} from './types'
+import {ListAccessArgs} from './types'
 
 
 export function isLoggedIn({session}: ListAccessArgs ){
@@ -26,7 +25,6 @@ export async function isPostCreator({session, context, itemId} : any ){
     const {ownerId} = await context.db.lists.Post.findOne({
         where: { id: itemId },
       });
-    console.log(ownerId)
     return ownerId === session?.itemId
 }
 
@@ -36,6 +34,18 @@ export async function isCommentCreator({session, context, itemId} : any ){
       });
     return ownerId === session?.itemId
 }
+
+export async function deleteCommentPriviledge({context, existingItem}: any){
+    const comment = await context.db.lists.Post.findOne({
+        where: { id: existingItem},
+      });
+    const post = await context.db.lists.Post.findOne({
+        where: { id: comment.postId},
+      });
+    
+    return post.owner === context.session?.id || comment.id === context.session?.id || isAdmin({session:context?.session, context})
+}
+
 
 
 
@@ -50,7 +60,10 @@ export const rules = {
     canDeleteAndUpdatePost({session, context, itemId}: any){
         return isPostCreator({session, context, itemId}) || isAdmin({session, context})
     },
-    canDeleteAndUpdateComment({session, context, itemId}: any){
+    canUpdateComment({session, context, itemId}: any){
+        return isCommentCreator({session, context, itemId}) || isAdmin({session, context})
+    },
+    canDeleteComment({session, context, itemId}: any){
         return isCommentCreator({session, context, itemId}) || isAdmin({session, context})
     },
     canCreateRole({session, context}: any){

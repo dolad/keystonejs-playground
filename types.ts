@@ -1,5 +1,4 @@
 import { KeystoneGraphQLAPI, KeystoneListsAPI, KeystoneContext } from '@keystone-next/types';
-import type {Permission} from './permissionTypes'
 export type Session = {
     itemId: string,
     listKey: string,
@@ -8,7 +7,7 @@ export type Session = {
         role?: {
             id:string,
             name:string
-        } & {[key in Permission] : boolean;}
+     }
     }
 }
 

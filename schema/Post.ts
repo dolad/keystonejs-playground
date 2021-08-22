@@ -16,13 +16,6 @@ export const Post = list({
             resolvedData.owner = {connect: authenticatedData(context) || undefined }
          }
        return resolvedData
-     },
-     beforeDelete:({listKey,operation, existingItem, context}) => {
-         console.log(listKey)
-         console.log(operation)
-         console.log(existingItem)
-        //  console.log(context)
-
      }
 
     },
@@ -52,10 +45,18 @@ export const Post = list({
         publishDate: timestamp(),
         owner: relationship({
           ref: 'User.posts',
+          ui: {
+            createView: { fieldMode: 'hidden' },
+            itemView: { fieldMode: 'read' },
+          },
         }),
         comments: relationship({
           ref: 'Comment.posts',
           many: true,
+          ui: {
+            createView: { fieldMode: 'hidden' },
+            itemView: { fieldMode: 'read' },
+          },
         }),
       },
 })

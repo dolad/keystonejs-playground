@@ -243,7 +243,6 @@ input CommentWhereInput {
 
 input CommentWhereUniqueInput {
   id: ID
-  body: String
 }
 
 input CommentOrderByInput {
