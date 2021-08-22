@@ -1,0 +1,54 @@
+datasource postgresql {
+  url      = env("DATABASE_URL")
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "node_modules/.prisma/client"
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String?
+  status      String?
+  content     Json?
+  publishDate DateTime?
+  owner       User?     @relation("Post_owner", fields: [ownerId], references: [id])
+  ownerId     String?   @map("owner")
+  comments    Comment[] @relation("Comment_posts")
+
+  @@index([ownerId])
+}
+
+model Comment {
+  id         String    @id @default(cuid())
+  posts      Post?     @relation("Comment_posts", fields: [postsId], references: [id])
+  postsId    String?   @map("posts")
+  body       String?   @unique
+  owner      User?     @relation("Comment_owner", fields: [ownerId], references: [id])
+  ownerId    String?   @map("owner")
+  created_at DateTime?
+
+  @@index([postsId])
+  @@index([ownerId])
+}
+
+model Role {
+  id   String  @id @default(cuid())
+  name String? @unique
+  user User[]  @relation("User_role")
+}
+
+model User {
+  id       String    @id @default(cuid())
+  name     String?
+  email    String?   @unique
+  password String?
+  posts    Post[]    @relation("Post_owner")
+  comments Comment[] @relation("Comment_owner")
+  role     Role?     @relation("User_role", fields: [roleId], references: [id])
+  roleId   String?   @map("role")
+
+  @@index([roleId])
+}
